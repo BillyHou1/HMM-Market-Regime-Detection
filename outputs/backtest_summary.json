@@ -1,0 +1,417 @@
+{
+  "rows": [
+    {
+      "ticker": "TLT",
+      "asset_class": "bond_etf",
+      "legacy": {
+        "ticker": "TLT",
+        "n": 681,
+        "n_viol": 44,
+        "viol_rate": 0.06461086637298091,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.0934762680368495,
+        "chris_p": 0.07581368434620539,
+        "state_distribution": {
+          "Volatile Rally": 235,
+          "Quiet Decline": 155,
+          "Correction": 107,
+          "Steady Bull": 139,
+          "Crisis": 45
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "TLT",
+        "n": 681,
+        "n_viol": 44,
+        "viol_rate": 0.06461086637298091,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.0934762680368495,
+        "chris_p": 0.9233797496974198,
+        "state_distribution": {
+          "Stable": 92,
+          "Drifting Higher": 217,
+          "Yield Shock": 82,
+          "Falling Yields": 290
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_bond_etf.pkl"
+    },
+    {
+      "ticker": "USO",
+      "asset_class": "commodity_etf",
+      "legacy": {
+        "ticker": "USO",
+        "n": 681,
+        "n_viol": 16,
+        "viol_rate": 0.023494860499265784,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.00042220775033186,
+        "chris_p": 0.05165186270188171,
+        "state_distribution": {
+          "Volatile Rally": 206,
+          "Quiet Decline": 94,
+          "Correction": 154,
+          "Steady Bull": 121,
+          "Crisis": 106
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "USO",
+        "n": 681,
+        "n_viol": 14,
+        "viol_rate": 0.020558002936857563,
+        "expected_rate": 0.05,
+        "kupiec_p": 6.931617590055783e-05,
+        "chris_p": 0.28556567610191597,
+        "state_distribution": {
+          "Bull Run": 245,
+          "Range Bound": 99,
+          "Bear / Crash": 108,
+          "Choppy": 229
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_commodity_etf.pkl"
+    },
+    {
+      "ticker": "GLD",
+      "asset_class": "commodity_etf",
+      "legacy": {
+        "ticker": "GLD",
+        "n": 681,
+        "n_viol": 30,
+        "viol_rate": 0.04405286343612335,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.4677265769735284,
+        "chris_p": 0.5648679231607691,
+        "state_distribution": {
+          "Volatile Rally": 187,
+          "Quiet Decline": 173,
+          "Correction": 123,
+          "Steady Bull": 64,
+          "Crisis": 134
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "GLD",
+        "n": 681,
+        "n_viol": 28,
+        "viol_rate": 0.041116005873715125,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.2730475884677952,
+        "chris_p": 0.8793880086332777,
+        "state_distribution": {
+          "Bull Run": 170,
+          "Range Bound": 199,
+          "Bear / Crash": 174,
+          "Choppy": 138
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_commodity_etf.pkl"
+    },
+    {
+      "ticker": "VNQ",
+      "asset_class": "reit",
+      "legacy": {
+        "ticker": "VNQ",
+        "n": 681,
+        "n_viol": 24,
+        "viol_rate": 0.03524229074889868,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.06264030427434841,
+        "chris_p": 0.05433313118595229,
+        "state_distribution": {
+          "Volatile Rally": 249,
+          "Quiet Decline": 105,
+          "Correction": 129,
+          "Steady Bull": 144,
+          "Crisis": 54
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "VNQ",
+        "n": 681,
+        "n_viol": 33,
+        "viol_rate": 0.048458149779735685,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.8528159864493536,
+        "chris_p": 0.29454448859621296,
+        "state_distribution": {
+          "Healthy Growth": 310,
+          "Cap-Rate Rising": 98,
+          "Cap-Rate Stable": 257,
+          "Real-Estate Stress": 16
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_reit.pkl"
+    },
+    {
+      "ticker": "UUP",
+      "asset_class": "currency_etf",
+      "legacy": {
+        "ticker": "UUP",
+        "n": 681,
+        "n_viol": 44,
+        "viol_rate": 0.06461086637298091,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.0934762680368495,
+        "chris_p": 0.9233797496974198,
+        "state_distribution": {
+          "Volatile Rally": 192,
+          "Quiet Decline": 100,
+          "Correction": 127,
+          "Steady Bull": 180,
+          "Crisis": 82
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "UUP",
+        "n": 681,
+        "n_viol": 49,
+        "viol_rate": 0.07195301027900147,
+        "expected_rate": 0.05,
+        "kupiec_p": 0.013372059710082485,
+        "chris_p": 0.4235937860628136,
+        "state_distribution": {
+          "Strengthening": 294,
+          "Range": 146,
+          "FX Stress": 115,
+          "Drifting Weak": 126
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_currency_etf.pkl"
+    },
+    {
+      "ticker": "BTC-USD",
+      "asset_class": "crypto",
+      "legacy": {
+        "ticker": "BTC-USD",
+        "n": 1045,
+        "n_viol": 11,
+        "viol_rate": 0.010526315789473684,
+        "expected_rate": 0.05,
+        "kupiec_p": 1.6083800957744643e-12,
+        "chris_p": 0.6283730065779966,
+        "state_distribution": {
+          "Volatile Rally": 324,
+          "Quiet Decline": 173,
+          "Correction": 306,
+          "Steady Bull": 101,
+          "Crisis": 141
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "BTC-USD",
+        "n": 1045,
+        "n_viol": 10,
+        "viol_rate": 0.009569377990430622,
+        "expected_rate": 0.05,
+        "kupiec_p": 3.006483950684924e-13,
+        "chris_p": 0.6600798504879645,
+        "state_distribution": {
+          "Capitulation": 157,
+          "Bull Run": 360,
+          "Quiet Bull": 210,
+          "Distribution": 318
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_crypto.pkl"
+    },
+    {
+      "ticker": "SPY",
+      "asset_class": "equity_us",
+      "legacy": {
+        "ticker": "SPY",
+        "n": 681,
+        "n_viol": 13,
+        "viol_rate": 0.01908957415565345,
+        "expected_rate": 0.05,
+        "kupiec_p": 2.5288566899872578e-05,
+        "chris_p": 0.24135293419503823,
+        "state_distribution": {
+          "Volatile Rally": 111,
+          "Quiet Decline": 139,
+          "Correction": 145,
+          "Steady Bull": 220,
+          "Crisis": 66
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "SPY",
+        "n": 681,
+        "n_viol": 13,
+        "viol_rate": 0.01908957415565345,
+        "expected_rate": 0.05,
+        "kupiec_p": 2.5288566899872578e-05,
+        "chris_p": 0.24135293419503823,
+        "state_distribution": {
+          "Steady Bull": 324,
+          "Panic": 110,
+          "Quiet Decline": 122,
+          "Volatile Rally": 125
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_equity_us.pkl"
+    },
+    {
+      "ticker": "AAPL",
+      "asset_class": "equity_us",
+      "legacy": {
+        "ticker": "AAPL",
+        "n": 681,
+        "n_viol": 13,
+        "viol_rate": 0.01908957415565345,
+        "expected_rate": 0.05,
+        "kupiec_p": 2.5288566899872578e-05,
+        "chris_p": 0.24135293419503823,
+        "state_distribution": {
+          "Volatile Rally": 102,
+          "Quiet Decline": 134,
+          "Correction": 188,
+          "Steady Bull": 165,
+          "Crisis": 92
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_states_total": 5
+      },
+      "expert": {
+        "ticker": "AAPL",
+        "n": 681,
+        "n_viol": 14,
+        "viol_rate": 0.020558002936857563,
+        "expected_rate": 0.05,
+        "kupiec_p": 6.931617590055783e-05,
+        "chris_p": 0.28556567610191597,
+        "state_distribution": {
+          "Steady Bull": 207,
+          "Panic": 103,
+          "Quiet Decline": 177,
+          "Volatile Rally": 194
+        },
+        "states_used": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_states_total": 4
+      },
+      "expert_path": "hmm_equity_us.pkl"
+    }
+  ],
+  "alpha": 0.05,
+  "mean_legacy_dist": 0.022215781745111678,
+  "mean_expert_dist": 0.02215184537234155,
+  "expert_better_count": 2,
+  "n_tickers": 8
+}
