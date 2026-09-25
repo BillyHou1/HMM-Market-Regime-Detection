@@ -1,4 +1,3 @@
-"""Train one HMM per asset class on a basket of liquid tickers."""
 import os
 import sys
 import pickle
@@ -9,7 +8,7 @@ import pandas as pd
 import yfinance as yf
 from hmmlearn import hmm
 from feature_engine import compute_features, rolling_zscore
-from hmm_model import compute_bic, labels_for
+from hmm_model import compute_bic, name_states
 warnings.filterwarnings('ignore')
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +38,7 @@ def fetch_basket(tickers, start='2014-01-01', end='2025-11-26', save_dir='data/r
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = df.columns.get_level_values(0)
             if df.empty:
-                print(f"  ⚠  {t}: no data, skip")
+                print(f"  {t}: no data, skip")
                 continue
             df.to_csv(path)
         col = 'Adj Close' if 'Adj Close' in df.columns else 'Close'
@@ -62,12 +61,12 @@ def stack_basket_features(closes):
             f['_source'] = t
             parts.append(f)
     if not parts:
-        return None, None
-    stacked = pd.concat(parts, axis=0).sort_index()
-    X = stacked[FEATURES].values
-    return X, stacked
+        return None, None, None
+    # keep each ticker as its own contiguous sequence; the HMM is fitted with lengths
+    stacked = pd.concat(parts, axis=0)
+    return stacked[FEATURES].values, stacked, [len(p) for p in parts]
 
-def select_model(X, min_states=2, max_states=5, n_seeds=5, cov_type='diag'):
+def select_model(X, lengths, min_states=2, max_states=5, n_seeds=5, cov_type='diag'):
     print(f"  Selecting HMM ({min_states}..{max_states} states, cov={cov_type})...")
     results = []
     for n in range(min_states, max_states + 1):
@@ -77,15 +76,15 @@ def select_model(X, min_states=2, max_states=5, n_seeds=5, cov_type='diag'):
                                 n_iter=300, random_state=42 + seed,
                                 tol=1e-4, init_params='stmc', params='stmc')
             try:
-                m.fit(X)
-                s = m.score(X)
+                m.fit(X, lengths)
+                s = m.score(X, lengths)
             except Exception as e:
                 continue
             if s > best_score:
                 best_score, best_model = s, m
         if best_model is None:
             continue
-        bic = compute_bic(best_model, X)
+        bic = compute_bic(best_model, X, lengths)
         results.append({'n': n, 'logL': best_score, 'bic': bic, 'model': best_model})
         print(f"    n={n}: logL={best_score:10.1f}  BIC={bic:10.1f}")
     if not results:
@@ -94,56 +93,28 @@ def select_model(X, min_states=2, max_states=5, n_seeds=5, cov_type='diag'):
     print(f"  Selected: {best['n']} states  (BIC={best['bic']:.1f})")
     return best['model']
 
-def name_states(model, X, stacked, asset_class='equity_us'):
-    states = model.predict(X)
-    k = model.n_components
-    stats = {}
-    for s in range(k):
-        mask = states == s
-        if mask.sum() == 0:
-            stats[s] = {'ret': 0.0, 'vol': 1.0, 'count': 0}
-            continue
-        sub = stacked.iloc[mask]
-        stats[s] = {'ret': sub['return_5d'].mean(),
-                    'vol': sub['volatility_20d'].mean(),
-                    'count': int(mask.sum())}
-    score = {s: stats[s]['ret'] - 0.5 * stats[s]['vol'] for s in range(k)}
-    order = sorted(range(k), key=lambda s: -score[s])
-    bank = labels_for(asset_class, k)
-    names = {s: bank[i] for i, s in enumerate(order)}
-    print("  States:")
-    for s in range(k):
-        r, v, n = stats[s]['ret'], stats[s]['vol'], stats[s]['count']
-        print(f"    s={s} {names[s]:<16s} ret={r:+.4f} vol={v:.3f}  n={n}")
-    return states, names, stats
-
-def train_one_class(asset_class, tickers, models_dir='models', skip_download=False,
-                    min_states=2, max_states=5, cov_type='diag'):
-    print(f"\n{'='*60}\n  Training HMM for {asset_class}: {tickers}\n{'='*60}")
-    closes = fetch_basket(tickers,
-                          start='2014-01-01' if not skip_download else '2014-01-01',
-                          end='2025-11-26')
+def train_one_class(asset_class, tickers, models_dir='models',
+                    min_states=2, max_states=5, cov_type='diag', train_end='2023-01-01'):
+    print(f"\nTraining HMM for {asset_class}: {tickers}")
+    closes = fetch_basket(tickers, start='2014-01-01', end='2025-11-26')
+    closes = {t: c[c.index < pd.Timestamp(train_end)] for t, c in closes.items()}
     if not closes:
-        print(f"  ⚠  no data for {asset_class}, skip")
+        print(f"  no data for {asset_class}, skip")
         return None
-    X, stacked = stack_basket_features(closes)
+    X, stacked, lengths = stack_basket_features(closes)
     if X is None or len(X) < 1000:
-        print(f"  ⚠  insufficient features ({len(X) if X is not None else 0} rows), skip")
+        print(f"  insufficient features ({len(X) if X is not None else 0} rows), skip")
         return None
     print(f"  Features: {len(X)} rows across {len(closes)} tickers")
-    model = select_model(X, min_states, max_states, cov_type=cov_type)
+    model = select_model(X, lengths, min_states, max_states, cov_type=cov_type)
     if model is None:
-        print(f"  ⚠  HMM fit failed for {asset_class}")
+        print(f"  HMM fit failed for {asset_class}")
         return None
-    states, names, stats = name_states(model, X, stacked, asset_class=asset_class)
-    feat_means = pd.DataFrame(X, columns=FEATURES).mean().to_dict()
-    feat_stds = pd.DataFrame(X, columns=FEATURES).std().to_dict()
+    names = name_states(model.predict(X, lengths), stacked.reset_index(drop=True), model.n_components)
     bundle = {
         'model': model,
         'names': names,
         'features': FEATURES,
-        'feature_means': feat_means,
-        'feature_stds': feat_stds,
         'asset_class': asset_class,
         'tickers': tickers,
         'train_start': str(min(c.index.min() for c in closes.values()).date()),
@@ -156,14 +127,14 @@ def train_one_class(asset_class, tickers, models_dir='models', skip_download=Fal
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, 'wb') as f:
         pickle.dump(bundle, f)
-    print(f"  ✓  Saved: {out_path}")
+    print(f"  Saved: {out_path}")
     return bundle
 
 def main():
     p = argparse.ArgumentParser(description='Train per-asset-class HMMs')
     p.add_argument('--classes', default='all',
                    help='comma-separated subset of: ' + ','.join(ASSET_CLASS_BASKETS))
-    p.add_argument('--skip-download', action='store_true')
+    p.add_argument('--train-end', default='2023-01-01')
     p.add_argument('--min-states', type=int, default=2)
     p.add_argument('--max-states', type=int, default=5)
     p.add_argument('--cov', default='diag', choices=['diag', 'full', 'spherical', 'tied'])
@@ -173,15 +144,14 @@ def main():
     summary = {}
     for c in classes:
         if c not in ASSET_CLASS_BASKETS:
-            print(f"  ⚠  unknown class {c}, skip"); continue
+            print(f"  unknown class {c}, skip"); continue
         b = train_one_class(c, ASSET_CLASS_BASKETS[c],
-                             skip_download=args.skip_download,
                              min_states=args.min_states, max_states=args.max_states,
-                             cov_type=args.cov)
+                             cov_type=args.cov, train_end=args.train_end)
         if b:
             summary[c] = {'n_states': b['n_states'], 'rows': b['n_train_rows'],
                            'tickers': b['tickers']}
-    print(f"\n{'='*60}\n  Summary: trained {len(summary)}/{len(classes)} classes\n{'='*60}")
+    print(f"\nSummary: trained {len(summary)}/{len(classes)} classes")
     for c, info in summary.items():
         print(f"  {c:14s} states={info['n_states']}  rows={info['rows']}  tickers={info['tickers']}")
 

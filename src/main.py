@@ -13,6 +13,7 @@ def main():
     p.add_argument('--end', default='2025-11-27')
     p.add_argument('--min-states', type=int, default=2)
     p.add_argument('--max-states', type=int, default=5)
+    p.add_argument('--train-end', default='2023-01-01')
     p.add_argument('--data-dir', default='data')
     p.add_argument('--model-dir', default='models')
     p.add_argument('--out-dir', default='outputs')
@@ -35,7 +36,7 @@ def main():
 
     process_features(raw_path, proc_path)
     model, results, names = train_hmm(proc_path, model_path, results_path,
-                                       args.min_states, args.max_states)
+                                       args.min_states, args.max_states, args.train_end)
     if not args.skip_plots:
         make_all(results, model, names, fig_dir)
 

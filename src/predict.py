@@ -2,7 +2,8 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
-from feature_engine import compute_features, rolling_zscore, STD_WIN
+from feature_engine import compute_features, rolling_zscore
+from hmm_model import filter_probs
 
 MODELS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
 DEFAULT_MODEL_PATH = os.path.join(MODELS_DIR, 'hmm_model.pkl')
@@ -14,11 +15,9 @@ def model_path_for_class(asset_class):
 def load_bundle(model_path=DEFAULT_MODEL_PATH):
     with open(model_path, 'rb') as f:
         b = pickle.load(f)
-    b.setdefault('feature_means', None)
-    b.setdefault('feature_stds', None)
     return b
 
-def _features_zscored(close, bundle):
+def _features_zscored(close):
     f = compute_features(close)
     base = ['return_5d', 'volatility_20d', 'momentum_60d', 'downside_risk_20d']
     for c in base:
@@ -27,16 +26,15 @@ def _features_zscored(close, bundle):
 
 def predict_regime_series(close, model_path=DEFAULT_MODEL_PATH):
     b = load_bundle(model_path)
-    feats = _features_zscored(close, b)
+    feats = _features_zscored(close)
     X = feats[b['features']].values
-    states = b['model'].predict(X)
+    states = filter_probs(b['model'], X).argmax(axis=1)
     out = pd.DataFrame({'state': states,
                         'state_name': [b['names'][s] for s in states]},
                        index=feats.index)
     return out, b
 
 def _smooth_probs(probs, alpha=0.02):
-    import numpy as np
     p = np.asarray(probs, dtype=float)
     k = len(p)
     return (p + alpha) / (1.0 + k * alpha)
@@ -45,12 +43,12 @@ def predict_regime_latest(close, model_path=DEFAULT_MODEL_PATH, smooth=True, ass
     if asset_class and model_path == DEFAULT_MODEL_PATH:
         model_path = model_path_for_class(asset_class)
     b = load_bundle(model_path)
-    feats = _features_zscored(close, b)
+    feats = _features_zscored(close)
     if feats.empty:
         raise ValueError("Not enough history to compute features (need ~252 days).")
     X = feats[b['features']].values
-    state = int(b['model'].predict(X[-1:])[0])
-    probs_raw = b['model'].predict_proba(X[-1:])[0]
+    probs_raw = filter_probs(b['model'], X)[-1]
+    state = int(probs_raw.argmax())
     probs = _smooth_probs(probs_raw) if smooth else probs_raw
     try:
         loglik = float(b['model'].score(X[-1:]))

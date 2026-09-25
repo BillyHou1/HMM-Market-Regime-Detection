@@ -75,8 +75,8 @@ def plot_state_durations(data, names, out_path):
     fig, ax = plt.subplots(figsize=(8, 4))
     cmap = _color_map(names)
     by_state = {s: [r for st, r in runs if st == s] for s in names}
-    ax.boxplot([by_state[s] for s in sorted(names.keys())],
-               labels=[names[s] for s in sorted(names.keys())], showfliers=False)
+    ax.boxplot([by_state[s] for s in sorted(names.keys())], showfliers=False)
+    ax.set_xticks(range(1, len(names) + 1), [names[s] for s in sorted(names.keys())])
     ax.set_ylabel('Run length (days)'); ax.set_title('Regime persistence')
     plt.setp(ax.get_xticklabels(), rotation=20, ha='right')
     fig.tight_layout(); fig.savefig(out_path, dpi=140); plt.close(fig)
